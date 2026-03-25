@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
+import { useT } from "@/hooks/useT";
 
 export default function OurStory() {
+  const t = useT("aboutPage");
+
   return (
-    <section className="relative bg-gradient-to-b from-white to-rose-50 py-14 px-4 overflow-hidden">
+    <section className="relative bg-linear-to-b from-white to-rose-50 py-14 px-4 overflow-hidden">
 
       {/* Decorative Blur Background */}
       <div className="absolute -top-10 right-0 w-40 h-40 bg-pink-200 rounded-full blur-3xl opacity-30"></div>
@@ -20,13 +25,11 @@ export default function OurStory() {
         </div>
         <div>
           <h2 className="text-2xl md:text-4xl font-bold text-rose-600 leading-tight">
-            Our Story
+            {t.storyTitle}
           </h2>
 
           <p className="mt-5 text-gray-600 leading-relaxed text-base md:text-lg">
-            As parents ourselves, we understand how important it is to choose safe,
-            reliable, and loving products for your child. Our journey began with
-            a simple mission — to make parenting easier and more joyful.
+            {t.storyDescription}
           </p>
         </div>
       </div>

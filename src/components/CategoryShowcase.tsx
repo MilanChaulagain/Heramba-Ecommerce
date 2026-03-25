@@ -1,15 +1,20 @@
-import Link from "next/link";
+"use client";
 
-const categories = [
-  { name: "Clothing", icon: "👗", count: 48, color: "from-rose-50 to-pink-50" },
-  { name: "Feeding", icon: "🍼", count: 32, color: "from-amber-50 to-orange-50" },
-  { name: "Toys", icon: "🧸", count: 56, color: "from-pink-50 to-rose-50" },
-  { name: "Skincare", icon: "🧴", count: 24, color: "from-rose-50 to-amber-50" },
-  { name: "Bedding", icon: "🛏️", count: 18, color: "from-amber-50 to-pink-50" },
-  { name: "Accessories", icon: "🎀", count: 36, color: "from-pink-50 to-amber-50" },
+import Link from "next/link";
+import { useT } from "@/hooks/useT";
+
+const categoryMeta = [
+  { key: "clothing" as const, icon: "👗", count: 48, color: "from-rose-50 to-pink-50" },
+  { key: "feeding" as const, icon: "🍼", count: 32, color: "from-amber-50 to-orange-50" },
+  { key: "toys" as const, icon: "🧸", count: 56, color: "from-pink-50 to-rose-50" },
+  { key: "skincare" as const, icon: "🧴", count: 24, color: "from-rose-50 to-amber-50" },
+  { key: "bedding" as const, icon: "🛏️", count: 18, color: "from-amber-50 to-pink-50" },
+  { key: "accessories" as const, icon: "🎀", count: 36, color: "from-pink-50 to-amber-50" },
 ];
 
 export default function CategoryShowcase() {
+  const t = useT("categoryShowcase");
+
   return (
     <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
@@ -17,17 +22,17 @@ export default function CategoryShowcase() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <span className="inline-block text-sm font-medium tracking-widest uppercase text-rose-400 mb-2">
-              Browse
+              {t.tagline}
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-              Shop by Category
+              {t.title}
             </h2>
           </div>
           <Link
             href="/categories"
             className="hidden sm:inline-flex items-center gap-1 text-rose-500 text-sm font-medium hover:text-rose-600 transition-colors"
           >
-            View All
+            {t.viewAll}
             <svg
               className="w-4 h-4"
               fill="none"
@@ -42,9 +47,9 @@ export default function CategoryShowcase() {
 
         {/* Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
-          {categories.map((cat) => (
+          {categoryMeta.map((cat) => (
             <Link
-              key={cat.name}
+              key={cat.key}
               href="/categories"
               className="group flex flex-col items-center text-center p-6 rounded-2xl border border-rose-100/60 bg-white hover:shadow-lg hover:shadow-rose-100/40 hover:-translate-y-1 transition-all duration-300"
             >
@@ -54,10 +59,10 @@ export default function CategoryShowcase() {
                 {cat.icon}
               </div>
               <h3 className="text-sm font-semibold text-gray-800 group-hover:text-rose-600 transition-colors">
-                {cat.name}
+                {t[cat.key]}
               </h3>
               <span className="text-xs text-gray-400 mt-1">
-                {cat.count} items
+                {cat.count} {t.items}
               </span>
             </Link>
           ))}

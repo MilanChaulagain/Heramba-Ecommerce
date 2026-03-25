@@ -1,20 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/hooks/useT";
 
 export default function Footer() {
+  const t = useT("footer");
+  
   const quickLinks = [
-    { href: "/" as const, label: "Home" },
-    { href: "/products" as const, label: "Shop" },
-    { href: "/products" as const, label: "Categories" },
-    { href: "/blog" as const, label: "Blog" },
+    { href: "/" as const, label: t.home },
+    { href: "/products" as const, label: t.shop },
+    { href: "/products" as const, label: t.categories },
+    { href: "/blog" as const, label: t.blog },
   ];
 
   const companyLinks = [
-    { href: "/about" as const, label: "About Us" },
-    { href: "/contact" as const, label: "Contact" },
-    { href: "/" as const, label: "Privacy Policy" },
-    { href: "/" as const, label: "Terms of Service" },
+    { href: "/about" as const, label: t.about },
+    { href: "/contact" as const, label: t.contact },
+    { href: "/" as const, label: t.privacy },
+    { href: "/" as const, label: t.terms },
   ];
 
   return (
@@ -30,12 +33,13 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2 group mb-4">
               <span className="text-xl font-bold tracking-tight bg-linear-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
-                HERAMBA
+                {t.HERAMBA}
               </span>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
-              Timeless jewelry, crafted with care and elegance.<br/>
-              Panauti-4 Kushadevi Road, Nepal
+              {t.brandDescription}
+              <br />
+              {t.address}
             </p>
             {/* Social Icons */}
             <div className="flex items-center gap-3 mt-5">
@@ -75,7 +79,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4">
-              Quick Links
+              {t["Quick Links"]}
             </h3>
             <ul className="space-y-2.5">
               {quickLinks.map(({ href, label }) => (
@@ -94,7 +98,7 @@ export default function Footer() {
           {/* Company */}
           <div>
             <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4">
-              Company
+              {t["Company"]}
             </h3>
             <ul className="space-y-2.5">
               {companyLinks.map(({ href, label }) => (
@@ -113,22 +117,22 @@ export default function Footer() {
           {/* Newsletter */}
           <div>
             <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-4">
-              Stay Updated
+              {t["Stay Updated"]}
             </h3>
             <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-              Get updates on new arrivals, exclusive offers, and seasonal collections.
+              {t.newsletterDescription}
             </p>
             <form className="flex">
               <input
                 type="email"
-                placeholder="Your email address"
+                placeholder={t.emailPlaceholder}
                 className="flex-1 min-w-0 px-4 py-2.5 rounded-l-full bg-white border border-rose-100 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent transition-shadow"
               />
               <button
                 type="submit"
                 className="px-5 py-2.5 rounded-r-full bg-rose-500 text-white text-sm font-medium hover:bg-rose-600 shadow-sm shadow-rose-200/50 transition-all duration-300"
               >
-                Join
+                {t.join}
               </button>
             </form>
           </div>
@@ -140,19 +144,19 @@ export default function Footer() {
         {/* ─── Bottom Bar ─── */}
         <div className="flex flex-col sm:flex-row items-center justify-between pt-6 gap-3">
           <p className="text-xs text-gray-400">
-            2026 Heramba. All rights reserved.
+            {t.copyright}
           </p>
           <div className="flex items-center gap-4">
             <Link href="/" className="text-xs text-gray-400 hover:text-rose-500 transition-colors">
-              Privacy
+              {t.privacy}
             </Link>
             <span className="w-1 h-1 rounded-full bg-gray-300" />
             <Link href="/" className="text-xs text-gray-400 hover:text-rose-500 transition-colors">
-              Terms
+              {t.terms}
             </Link>
             <span className="w-1 h-1 rounded-full bg-gray-300" />
             <Link href="/" className="text-xs text-gray-400 hover:text-rose-500 transition-colors">
-              Cookies
+              {t.cookies}
             </Link>
           </div>
         </div>

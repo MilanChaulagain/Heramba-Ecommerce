@@ -3,9 +3,11 @@
 import { useState, useEffect, useMemo } from "react";
 import ProductCard from "@/components/ProductCard";
 import ProductFilters, { priceRanges } from "@/components/products/ProductFilters";
+import { useT } from "@/hooks/useT";
 import { productService, type Product } from "@/services/productService";
 
 export default function ProductsPage() {
+  const t = useT("productsPage");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +29,7 @@ export default function ProductsPage() {
         const data = await productService.getAllProducts();
         setProducts(data);
       } catch (err) {
-        setError("Failed to load products. Please try again later.");
+        setError("loadError");
         console.error("Error loading products:", err);
       } finally {
         setLoading(false);
@@ -88,15 +90,15 @@ export default function ProductsPage() {
 
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <span className="inline-block text-sm font-medium tracking-widest uppercase text-rose-400 mb-3">
-            Premium Baby Essentials
+            {t.tagline}
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
             <span className="bg-linear-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
-              Our Shop
+              {t.title}
             </span>
           </h1>
           <p className="mt-4 text-gray-500 text-base md:text-lg max-w-lg mx-auto">
-            Explore our complete collection of safe, organic &amp; lovingly curated products for your little one.
+            {t.description}
           </p>
 
           {/* Search Bar */}
@@ -112,12 +114,13 @@ export default function ProductsPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by product name..."
+              placeholder={t.searchPlaceholder}
               className="w-full pl-12 pr-5 py-3.5 rounded-full bg-white/80 backdrop-blur-sm border border-rose-200 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent shadow-sm transition-shadow"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
+                aria-label={t.clearSearch}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -137,7 +140,7 @@ export default function ProductsPage() {
             <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {error}
+            {error === "loadError" ? t.loadError : error}
           </div>
         )}
 
@@ -164,13 +167,13 @@ export default function ProductsPage() {
             /* Empty State */
             <div className="text-center py-20">
               <span className="text-6xl block mb-4">🔍</span>
-              <h3 className="text-xl font-bold text-gray-700 mb-2">No products found</h3>
-              <p className="text-gray-400 text-sm mb-4">Try changing your filters or search query.</p>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">{t.emptyTitle}</h3>
+              <p className="text-gray-400 text-sm mb-4">{t.emptyDescription}</p>
               <button
                 onClick={clearAllFilters}
                 className="px-6 py-2.5 rounded-full bg-rose-500 text-white text-sm font-medium hover:bg-rose-600 transition-colors"
               >
-                Clear All Filters
+                {t.clearAllFilters}
               </button>
             </div>
           ) : (

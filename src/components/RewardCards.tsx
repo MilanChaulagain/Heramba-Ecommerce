@@ -1,49 +1,54 @@
-import Link from "next/link";
+"use client";
 
-const rewards = [
-  {
-    icon: "🎁",
-    title: "Welcome Gift",
-    description: "Get $200 off on your very first order when you sign up today.",
-    cta: "Claim Now",
-    href: "/login",
-    accent: "from-rose-100 to-pink-100",
-    iconBg: "bg-rose-50",
-  },
-  {
-    icon: "⭐",
-    title: "Loyalty Points",
-    description: "Earn 1 point per $10 spent. Redeem for discounts on future orders.",
-    cta: "Learn More",
-    href: "/about",
-    accent: "from-amber-100 to-orange-100",
-    iconBg: "bg-amber-50",
-  },
-  {
-    icon: "💝",
-    title: "Refer & Earn",
-    description: "Share your code with friends. You both get $150 off your next purchase.",
-    cta: "Start Sharing",
-    href: "/login",
-    accent: "from-pink-100 to-rose-100",
-    iconBg: "bg-pink-50",
-  },
-];
+import Link from "next/link";
+import { useT } from "@/hooks/useT";
 
 export default function RewardCards() {
+  const t = useT("rewardCards");
+
+  const rewards = [
+    {
+      icon: "🎁",
+      title: t.welcomeGiftTitle,
+      description: t.welcomeGiftDesc,
+      cta: t.welcomeGiftCta,
+      href: "/login",
+      accent: "from-rose-100 to-pink-100",
+      iconBg: "bg-rose-50",
+    },
+    {
+      icon: "⭐",
+      title: t.loyaltyTitle,
+      description: t.loyaltyDesc,
+      cta: t.loyaltyCta,
+      href: "/about",
+      accent: "from-amber-100 to-orange-100",
+      iconBg: "bg-amber-50",
+    },
+    {
+      icon: "💝",
+      title: t.referTitle,
+      description: t.referDesc,
+      cta: t.referCta,
+      href: "/login",
+      accent: "from-pink-100 to-rose-100",
+      iconBg: "bg-pink-50",
+    },
+  ];
+
   return (
     <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <span className="inline-block text-sm font-medium tracking-widest uppercase text-rose-400 mb-2">
-            Rewards & Perks
+            {t.tagline}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            More Reasons to Love Heramba
+            {t.title}
           </h2>
           <p className="mt-3 text-gray-500 max-w-md mx-auto">
-            Enjoy exclusive perks designed to make every purchase sweeter.
+            {t.description}
           </p>
         </div>
 

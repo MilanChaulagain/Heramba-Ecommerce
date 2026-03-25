@@ -1,27 +1,30 @@
+"use client";
+
+import { useT } from "@/hooks/useT";
+
 type PromiseItem = {
   title: string;
   description: string;
 };
 
-const promises: PromiseItem[] = [
-  {
-    title: "Safe & Tested",
-    description:
-      "All products meet strict safety standards for your peace of mind.",
-  },
-  {
-    title: "Skin-Friendly Materials",
-    description:
-      "Gentle fabrics and materials suitable for delicate skin.",
-  },
-  {
-    title: "Trusted by Parents",
-    description:
-      "Loved and recommended by thousands of happy moms.",
-  },
-];
-
 export default function OurPromise() {
+  const t = useT("aboutPage");
+
+  const promises: PromiseItem[] = [
+    {
+      title: t.promiseSafeTitle,
+      description: t.promiseSafeDescription,
+    },
+    {
+      title: t.promiseSkinTitle,
+      description: t.promiseSkinDescription,
+    },
+    {
+      title: t.promiseTrustedTitle,
+      description: t.promiseTrustedDescription,
+    },
+  ];
+
   return (
     <section className="relative bg-gradient-to-b from-rose-50 to-white py-14 px-6 overflow-hidden">
       
@@ -31,7 +34,7 @@ export default function OurPromise() {
 
       <div className="relative max-w-6xl mx-auto">
         <h2 className="text-2xl md:text-4xl font-bold text-center text-rose-600 mb-12">
-          Our Promise to You
+          {t.promiseTitle}
         </h2>
 
         <div className="grid md:grid-cols-3 gap-8">

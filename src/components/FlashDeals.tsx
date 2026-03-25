@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { productService, type Product } from "@/services/productService";
+import { useT } from "@/hooks/useT";
 
 export default function FlashDeals() {
   const [deals, setDeals] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = useT("flashDeals");
 
   useEffect(() => {
     async function loadDeals() {
@@ -32,22 +34,22 @@ export default function FlashDeals() {
             <div className="flex items-center gap-2 mb-1">
               <span className="text-2xl">⚡</span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-                Flash Deals
+                {t.title}
               </h2>
             </div>
             <p className="text-gray-500 text-sm">
-              Limited time offers on premium baby essentials
+              {t.subtitle}
             </p>
           </div>
 
           {/* Dummy Countdown Timer */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500 font-medium">Ends in</span>
+            <span className="text-sm text-gray-500 font-medium">{t.endsIn}</span>
 
             {[
-              { label: "HRS", value: "00" },
-              { label: "MIN", value: "00" },
-              { label: "SEC", value: "00" },
+              { label: t.hrs, value: "00" },
+              { label: t.min, value: "00" },
+              { label: t.sec, value: "00" },
             ].map((unit, i) => (
               <div key={unit.label} className="flex items-center gap-2">
                 <div className="bg-rose-500 text-white w-12 h-12 rounded-xl flex flex-col items-center justify-center shadow-md shadow-rose-200/50">
@@ -119,11 +121,11 @@ export default function FlashDeals() {
                     </h3>
                     <div className="flex items-center gap-2 mb-4">
                       <span className="text-lg font-bold text-rose-600">
-                        ₹{deal.price}
+                        ${deal.price}
                       </span>
                       {deal.originalPrice && (
                         <span className="text-sm text-gray-400 line-through">
-                          ₹{deal.originalPrice}
+                          ${deal.originalPrice}
                         </span>
                       )}
                     </div>
@@ -131,7 +133,7 @@ export default function FlashDeals() {
                       href={`/products/${deal.id}`}
                       className="block text-center w-full py-2 rounded-full bg-rose-50 text-rose-600 text-sm font-medium hover:bg-rose-500 hover:text-white transition-all duration-300"
                     >
-                      Grab Deal
+                      {t.grabDeal}
                     </Link>
                   </div>
                 </div>

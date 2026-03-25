@@ -1,19 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { getCartCount, onCartUpdate } from "@/lib/cartStorage";
 import { getWishlistCount, onWishlistUpdate } from "@/lib/wishlistStorage";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/products", label: "Shop" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useT } from "@/hooks/useT";
+import SocialLoginModal from "./auth/SocialLoginModal";
 
 export default function Navbar() {
   const [query, setQuery] = useState("");
@@ -22,7 +17,68 @@ export default function Navbar() {
   const [wishlistCount, setWishlistCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
-  const [language, setLanguage] = useState<"en" | "ne">("en");
+  const { language, setLanguage } = useLanguage();
+  const t = useT("navbar");
+  const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const loginDropdownRef = useRef<HTMLDivElement | null>(null);
+  const profileDropdownRef = useRef<HTMLDivElement | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  const getUserLabel = () => {
+    if (!token) return "Account";
+
+    try {
+      const payload = token.split(".")[1];
+      if (!payload) return "Account";
+
+      const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
+      const decoded = JSON.parse(atob(normalizedPayload));
+      return decoded?.name || decoded?.fullName || decoded?.username || decoded?.email || "Account";
+    } catch {
+      return "Account";
+    }
+  };
+
+  const userLabel = getUserLabel();
+  const userInitial = userLabel.charAt(0).toUpperCase();
+  
+
+  const navLinks = [
+    { href: "/", label: t.home },
+    { href: "/products", label: t.shop },
+    { href: "/blog", label: t.blog },
+    { href: "/about", label: t.about },
+    { href: "/contact", label: t.contact },
+  ];
+
+  /* ── Logout Function ── */
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setOpen(false);
+    setProfileOpen(false);
+    setMobileOpen(false);
+    router.push("/");
+  };
+
+  /* ── Load auth token on mount ── */
+  useEffect(() => {
+    const syncToken = () => {
+      const saved = localStorage.getItem("token");
+      setToken(saved);
+    };
+
+    syncToken();
+    window.addEventListener("storage", syncToken);
+    window.addEventListener("focus", syncToken);
+
+    return () => {
+      window.removeEventListener("storage", syncToken);
+      window.removeEventListener("focus", syncToken);
+    };
+  }, [pathname]);
+
 
   /* ── Load cart count on mount and listen for updates ── */
   useEffect(() => {
@@ -46,8 +102,58 @@ export default function Navbar() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetNode = event.target as Node;
+      if (loginDropdownRef.current && !loginDropdownRef.current.contains(targetNode)) {
+        setOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!profileOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetNode = event.target as Node;
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(targetNode)) {
+        setProfileOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [profileOpen]);
+
   function toggleLanguage() {
-    setLanguage((prev) => (prev === "en" ? "ne" : "en"));
+    setLanguage(language === "en" ? "ne" : "en");
   }
 
   function onSubmit(e: React.FormEvent) {
@@ -72,9 +178,18 @@ export default function Navbar() {
               className="rounded-xl shadow-sm ring-1 ring-rose-100 transition-transform duration-300 group-hover:scale-105"
             />
             <span className="text-xl font-bold tracking-tight bg-linear-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
-              HERAMBA
+              {t["HERAMBA"]}
             </span>
           </Link>
+
+          {/* Language Toggle Button - Mobile View */}
+          <button
+              onClick={toggleLanguage}
+              className="ml-25 px-3 py-1 rounded-full bg-rose-50 text-black text-sm font-medium hover:text-rose-600 transition-colors lg:hidden"
+              aria-label="Toggle language"
+            >
+              {language === "en" ? "ने" : "EN"}
+            </button>
 
           {/* Search Bar — hidden on mobile */}
           <form
@@ -96,7 +211,7 @@ export default function Navbar() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search products..."
+              placeholder={t.searchPlaceholder}
               className="w-full pl-10 pr-4 py-2 rounded-full bg-rose-50/60 border border-rose-300 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent transition-shadow"
             />
           </form>
@@ -144,12 +259,96 @@ export default function Navbar() {
             )}
           </Link>
 
-            <Link
-              href="/login"
-              className="ml-2 px-5 py-2 rounded-full bg-rose-500 text-white text-sm font-medium shadow-md shadow-rose-200/50 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-200/60 transition-all duration-300"
-            >
-              Login
-            </Link>
+            {/* Login/Profile Dropdown */}
+            {!token ? (
+              <div ref={loginDropdownRef} className="relative ml-2">
+                <button
+                  onClick={() => setOpen((value) => !value)}
+                  className="px-5 py-2 rounded-full bg-rose-500 text-white text-sm font-medium shadow-md shadow-rose-200/50 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-200/60 transition-all duration-300 inline-flex items-center gap-1.5"
+                  aria-haspopup="menu"
+                  aria-expanded={open}
+                  aria-label="Toggle social login options"
+                >
+                  {t.Login}
+                </button>
+
+                {open && (
+                  <div className="absolute right-0 top-full mt-2 z-50">
+                    <SocialLoginModal close={() => setOpen(false)} />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div ref={profileDropdownRef} className="relative ml-2">
+                <button
+                  onClick={() => setProfileOpen((value) => !value)}
+                  className="pl-1.5 pr-2.5 py-1.5 rounded-full border border-rose-200 bg-white/90 text-gray-700 text-sm font-medium hover:bg-rose-50 hover:border-rose-300 transition-all duration-300 inline-flex items-center gap-2"
+                  aria-haspopup="menu"
+                  aria-expanded={profileOpen}
+                  aria-label="Toggle profile menu"
+                >
+                  <span className="w-7 h-7 rounded-full bg-rose-100 text-rose-600 text-xs font-bold flex items-center justify-center ring-1 ring-rose-200">
+                    {userInitial}
+                  </span>
+                  <span className="max-w-32 truncate">{userLabel}</span>
+                  <svg
+                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                      profileOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-2xl border border-rose-200 bg-white/95 backdrop-blur-md shadow-xl shadow-rose-100/60 overflow-hidden p-2">
+                    <Link
+                      href="/account/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                    >
+                      Profile
+                    </Link>
+
+                    <Link
+                      href="/account/orders"
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                    >
+                      Purchase History
+                    </Link>
+
+                    <Link
+                      href="/account/reviews"
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                    >
+                      My Reviews
+                    </Link>
+
+                    <Link
+                      href="/account/settings"
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                    >
+                      Settings
+                    </Link>
+
+                    <button
+                      onClick={logout}
+                      className="w-full text-left mt-1 pt-3 border-t border-rose-100 px-4 py-3 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Language Toggle Button */}
             <button
@@ -183,6 +382,7 @@ export default function Navbar() {
       {/* ─── Mobile Menu ─── */}
       {mobileOpen && (
         <div className="lg:hidden border-t border-rose-100 bg-white/95 backdrop-blur-md px-4 pb-5 pt-3 space-y-2 animate-fade-in-up">
+          
           {/* Mobile Search */}
           <form onSubmit={onSubmit} className="flex items-center relative mb-3 md:hidden">
             <svg
@@ -222,20 +422,55 @@ export default function Navbar() {
             );
           })}
 
-          {/* Cart Icon */}
-          <Link href="/cart" className="flex items-center">
-            <svg className="ml-4 w-5 h-5 text-gray-600 hover:text-rose-500 transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          {/* Wishlist Icon */}
+          <Link href="/wishlist" className="relative flex items-center ml-4">
+            <svg className="w-6 h-6 text-gray-600 hover:text-rose-500 transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
+            {wishlistCount > 0 && (
+              <span className="absolute -top-4 left-6 flex items-center justify-center w-5 h-5 rounded-full bg-rose-500 text-white text-xs font-bold">
+                {wishlistCount > 99 ? "99+" : wishlistCount}
+              </span>
+            )}
           </Link>
 
-          <Link
-            href="/login"
-            onClick={() => setMobileOpen(false)}
-            className="block text-center mt-2 px-5 py-2.5 rounded-full bg-rose-500 text-white text-sm font-medium shadow-md shadow-rose-200/50 hover:bg-rose-600 transition-all"
-          >
-            Login
+          {/* Cart Icon */}
+          <Link href="/cart" className="relative flex items-center ml-4">
+            <svg className="w-6 h-6 text-gray-600 hover:text-rose-500 transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {cartCount > 0 && (
+              <span className="absolute -top-4 left-6 flex items-center justify-center w-5 h-5 rounded-full bg-rose-500 text-white text-xs font-bold">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
           </Link>
+
+          {!token ? (
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="block text-center mt-2 px-5 py-2.5 rounded-full bg-rose-500 text-white text-sm font-medium shadow-md shadow-rose-200/50 hover:bg-rose-600 transition-all"
+            >
+              Login
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login/success"
+                onClick={() => setMobileOpen(false)}
+                className="block text-center mt-2 px-5 py-2.5 rounded-full bg-rose-500 text-white text-sm font-medium shadow-md shadow-rose-200/50 hover:bg-rose-600 transition-all"
+              >
+                Profile
+              </Link>
+              <button
+                onClick={logout}
+                className="w-full text-center mt-2 px-5 py-2.5 rounded-full bg-rose-50 text-gray-700 text-sm font-medium border border-rose-200 hover:bg-rose-100 transition-all"
+              >
+                Logout
+              </button>
+            </>
+          )}
           
         </div>
       )}

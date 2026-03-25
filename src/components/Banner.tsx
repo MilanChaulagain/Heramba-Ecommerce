@@ -1,15 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/hooks/useT";
 
-const trustBadges = [
-  { icon: "🛡️", label: "100% Safe" },
-  { icon: "🌿", label: "Organic" },
-  { icon: "🚚", label: "Free Shipping" },
-  { icon: "💝", label: "Gift Wrapped" },
-];
+const trustBadgeIcons = ["🛡️", "🌿", "🚚", "💝"];
 
 export default function Banner() {
+  const t = useT("banner");
+
+  const trustBadges = [
+    { icon: trustBadgeIcons[0], label: t.trustBadge1 },
+    { icon: trustBadgeIcons[1], label: t.trustBadge2 },
+    { icon: trustBadgeIcons[2], label: t.trustBadge3 },
+    { icon: trustBadgeIcons[3], label: t.trustBadge4 },
+  ];
+
   return (
     <section className="relative overflow-hidden min-h-130 md:min-h-140 flex items-center">
       {/* ─── Layered Background ─── */}
@@ -35,20 +40,19 @@ export default function Banner() {
           {/* Left – Text */}
           <div className="flex-1 text-center lg:text-left max-w-xl">
             <span className="inline-block text-sm font-medium tracking-widest uppercase text-rose-400 mb-4">
-              Premium Baby Essentials
+              {t.tagline}
             </span>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               <span className="bg-linear-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
-                Made with Love
+                {t.titleLine1}
               </span>
               <br />
-              <span className="text-gray-800">for Little Ones</span>
+              <span className="text-gray-800">{t.titleLine2}</span>
             </h1>
 
             <p className="mt-5 text-gray-500 text-base md:text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
-              Discover carefully selected, safe and premium essentials designed
-              to bring comfort and joy to your little family.
+              {t.description}
             </p>
 
             {/* CTAs */}
@@ -57,13 +61,13 @@ export default function Banner() {
                 href="/products"
                 className="px-8 py-3.5 rounded-full bg-rose-500 text-white font-medium shadow-lg shadow-rose-200/50 hover:bg-rose-600 hover:shadow-xl hover:shadow-rose-300/40 hover:-translate-y-0.5 transition-all duration-300"
               >
-                Shop Collection
+                {t.shopCollection}
               </Link>
               <Link
                 href="/about"
                 className="px-8 py-3.5 rounded-full border-2 border-rose-200 text-rose-600 font-medium hover:bg-rose-50 hover:border-rose-300 transition-all duration-300"
               >
-                Learn More
+                {t.learnMore}
               </Link>
             </div>
 
@@ -94,13 +98,13 @@ export default function Banner() {
                   </span>
                   <div>
                     <p className="text-sm font-medium text-rose-400 uppercase tracking-wider">
-                      Best Seller
+                      {t.bestSeller}
                     </p>
                     <h3 className="text-xl font-bold text-gray-800 mt-1">
-                      Organic Comfort Bundle
+                      {t.bundleTitle}
                     </h3>
                     <p className="text-gray-400 text-sm mt-1">
-                      Blanket + Onesie + Toy Set
+                      {t.bundleDescription}
                     </p>
                   </div>
                   <div className="flex items-baseline gap-2">
@@ -119,8 +123,8 @@ export default function Banner() {
                 <div className="flex items-center gap-2">
                   <span className="text-xl">⭐</span>
                   <div>
-                    <p className="text-xs font-bold text-gray-800">4.9 / 5</p>
-                    <p className="text-[10px] text-gray-400">2.4k reviews</p>
+                    <p className="text-xs font-bold text-gray-800">{t.rating}</p>
+                    <p className="text-[10px] text-gray-400">{t.reviews}</p>
                   </div>
                 </div>
               </div>

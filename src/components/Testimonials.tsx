@@ -1,43 +1,49 @@
-const testimonials = [
-  {
-    name: "Priya M.",
-    avatar: "👩",
-    rating: 5,
-    text: "Absolutely love the quality! The organic cotton onesies are so soft on my baby's skin. Will definitely order again.",
-  },
-  {
-    name: "Ananya R.",
-    avatar: "👩‍🦱",
-    rating: 5,
-    text: "Fast delivery and beautiful packaging. It felt like unboxing a gift! The bamboo blanket is our baby's favourite.",
-  },
-  {
-    name: "Sneha K.",
-    avatar: "👩‍🦰",
-    rating: 5,
-    text: "Finally a brand that cares about safety and style. The skincare set is gentle and smells amazing. Highly recommend!",
-  },
-];
+"use client";
+
+import { useT } from "@/hooks/useT";
 
 export default function Testimonials() {
+  const t = useT("testimonials");
+
+  const testimonials = [
+    {
+      name: t.testimonial1Name,
+      avatar: "👩",
+      rating: 5,
+      text: t.testimonial1Text,
+    },
+    {
+      name: t.testimonial2Name,
+      avatar: "👩‍🦱",
+      rating: 5,
+      text: t.testimonial2Text,
+    },
+    {
+      name: t.testimonial3Name,
+      avatar: "👩‍🦰",
+      rating: 5,
+      text: t.testimonial3Text,
+    },
+  ];
+
   return (
     <section className="py-16 px-6 bg-linear-to-b from-rose-50/40 via-white to-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <span className="inline-block text-sm font-medium tracking-widest uppercase text-rose-400 mb-2">
-            Happy Parents
+            {t.tagline}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            What Our Families Say
+            {t.title}
           </h2>
         </div>
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-          {testimonials.map((t) => (
+          {testimonials.map((item) => (
             <div
-              key={t.name}
+              key={item.name}
               className="relative bg-white rounded-2xl border border-rose-100/60 shadow-sm p-7 hover:shadow-lg hover:shadow-rose-100/30 transition-all duration-300"
             >
               {/* Quote mark */}
@@ -47,7 +53,7 @@ export default function Testimonials() {
 
               {/* Stars */}
               <div className="flex gap-0.5 mb-4">
-                {Array.from({ length: t.rating }).map((_, i) => (
+                {Array.from({ length: item.rating }).map((_, i) => (
                   <svg
                     key={i}
                     className="w-4 h-4 text-amber-400"
@@ -60,19 +66,19 @@ export default function Testimonials() {
               </div>
 
               <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                {t.text}
+                {item.text}
               </p>
 
               {/* Author */}
               <div className="flex items-center gap-3 border-t border-rose-50 pt-4">
                 <span className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-xl">
-                  {t.avatar}
+                  {item.avatar}
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">
-                    {t.name}
+                    {item.name}
                   </p>
-                  <p className="text-xs text-gray-400">Verified Buyer</p>
+                  <p className="text-xs text-gray-400">{t.verifiedBuyer}</p>
                 </div>
               </div>
             </div>

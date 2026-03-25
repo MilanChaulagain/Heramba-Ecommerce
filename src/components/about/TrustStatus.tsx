@@ -1,4 +1,17 @@
+"use client";
+
+import { useT } from "@/hooks/useT";
+
 export default function TrustStats() {
+  const t = useT("aboutPage");
+
+  const stats = [
+    { value: "2500+", label: t.statHappyParents },
+    { value: "5000+", label: t.statOrdersDelivered },
+    { value: "100%", label: t.statSafeProducts },
+    { value: "24/7", label: t.statSupport },
+  ];
+
   return (
     <section className="relative bg-gradient-to-b from-white to-rose-50 py-14 px-6 overflow-hidden">
       
@@ -8,13 +21,8 @@ export default function TrustStats() {
 
       <div className="relative max-w-5xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          
-          {[
-            { value: "2500+", label: "Happy Parents" },
-            { value: "5000+", label: "Orders Delivered" },
-            { value: "100%", label: "Safe Products" },
-            { value: "24/7", label: "Customer Support" },
-          ].map((stat, index) => (
+
+          {stats.map((stat, index) => (
             <div
               key={index}
               className="bg-white/70 backdrop-blur-sm rounded-3xl p-6 shadow-md 

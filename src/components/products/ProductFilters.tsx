@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useT } from "@/hooks/useT";
 
 /* ── Types ── */
 export type FilterState = {
@@ -23,37 +24,37 @@ export type FilterActions = {
 
 /* ── Constants ── */
 export const ageGroups = [
-  { label: "Newborn (0–3 months)", value: "0-3m" },
-  { label: "Infant (3–12 months)", value: "3-12m" },
-  { label: "Toddler (1–3 years)", value: "1-3y" },
-  { label: "Pre-school (3–5 years)", value: "3-5y" },
-  { label: "Kids (5–10 years)", value: "5-10y" },
-];
+  { labelKey: "newborn", value: "0-3m" },
+  { labelKey: "infant", value: "3-12m" },
+  { labelKey: "toddler", value: "1-3y" },
+  { labelKey: "preschool", value: "3-5y" },
+  { labelKey: "kids", value: "5-10y" },
+] as const;
 
 export const categories = [
-  "Clothing",
-  "Bedding",
-  "Toys",
-  "Skincare",
-  "Accessories",
-];
+  { labelKey: "clothing", value: "Clothing" },
+  { labelKey: "bedding", value: "Bedding" },
+  { labelKey: "toys", value: "Toys" },
+  { labelKey: "skincare", value: "Skincare" },
+  { labelKey: "accessories", value: "Accessories" },
+] as const;
 
 export const priceRanges = [
-  { label: "Under $300", min: 0, max: 299 },
-  { label: "$300 – $500", min: 300, max: 500 },
-  { label: "$500 – $800", min: 500, max: 800 },
-  { label: "$800 – $1200", min: 800, max: 1200 },
-  { label: "Above $1200", min: 1200, max: Infinity },
-];
+  { labelKey: "under300", min: 0, max: 299 },
+  { labelKey: "range300to500", min: 300, max: 500 },
+  { labelKey: "range500to800", min: 500, max: 800 },
+  { labelKey: "range800to1200", min: 800, max: 1200 },
+  { labelKey: "above1200", min: 1200, max: Infinity },
+] as const;
 
 export const ratingOptions = [4, 3, 2, 1];
 
 export const sortOptions = [
-  { label: "Newest", value: "newest" },
-  { label: "Price: Low → High", value: "price-asc" },
-  { label: "Price: High → Low", value: "price-desc" },
-  { label: "Top Rated", value: "rating" },
-];
+  { labelKey: "newest", value: "newest" },
+  { labelKey: "priceLowHigh", value: "price-asc" },
+  { labelKey: "priceHighLow", value: "price-desc" },
+  { labelKey: "topRated", value: "rating" },
+] as const;
 
 /* ── Chevron Icon ── */
 function ChevronIcon({ open }: { open: boolean }) {
@@ -97,8 +98,8 @@ export default function ProductFilters({
   resultCount,
   children,
 }: ProductFiltersProps) {
+  const t = useT("productFilters");
   const {
-    searchQuery,
     selectedAgeGroups,
     selectedCategories,
     selectedPriceRanges,
@@ -158,6 +159,23 @@ export default function ProductFilters({
     setSearchQuery("");
   }, [setSelectedAgeGroups, setSelectedCategories, setSelectedPriceRanges, setMinRating, setSearchQuery]);
 
+  const getAgeGroupLabel = (value: string) => {
+    const match = ageGroups.find((ageGroup) => ageGroup.value === value);
+    return match ? t.ageGroups[match.labelKey] : value;
+  };
+
+  const getCategoryLabel = (value: string) => {
+    const match = categories.find((category) => category.value === value);
+    return match ? t.categories[match.labelKey] : value;
+  };
+
+  const getPriceRangeLabel = (index: number) => {
+    const range = priceRanges[index];
+    return range ? t.priceRanges[range.labelKey] : "";
+  };
+
+  const productLabel = resultCount === 1 ? t.productSingular : t.productPlural;
+
   /* ── Shared filter sidebar content ── */
   const filterContent = (
     <div className="space-y-1">
@@ -181,7 +199,7 @@ export default function ProductFilters({
                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"
               />
             </svg>
-            Age Group
+            {t.ageGroup}
           </span>
           <ChevronIcon open={openSections.age} />
         </button>
@@ -201,7 +219,7 @@ export default function ProductFilters({
                   className="w-4 h-4 rounded border-rose-300 text-rose-500 focus:ring-rose-300 focus:ring-offset-0 cursor-pointer"
                 />
                 <span className="text-sm text-gray-600 group-hover:text-rose-600 transition-colors">
-                  {ag.label}
+                  {t.ageGroups[ag.labelKey]}
                 </span>
               </label>
             ))}
@@ -229,7 +247,7 @@ export default function ProductFilters({
                 d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
               />
             </svg>
-            Product Type
+            {t.productType}
           </span>
           <ChevronIcon open={openSections.type} />
         </button>
@@ -237,19 +255,19 @@ export default function ProductFilters({
           <div className="mt-2 space-y-2">
             {categories.map((cat) => (
               <label
-                key={cat}
+                key={cat.value}
                 className="flex items-center gap-3 cursor-pointer group"
               >
                 <input
                   type="checkbox"
-                  checked={selectedCategories.includes(cat)}
+                  checked={selectedCategories.includes(cat.value)}
                   onChange={() =>
-                    toggleArrayFilter(cat, setSelectedCategories)
+                    toggleArrayFilter(cat.value, setSelectedCategories)
                   }
                   className="w-4 h-4 rounded border-rose-300 text-rose-500 focus:ring-rose-300 focus:ring-offset-0 cursor-pointer"
                 />
                 <span className="text-sm text-gray-600 group-hover:text-rose-600 transition-colors">
-                  {cat}
+                  {t.categories[cat.labelKey]}
                 </span>
               </label>
             ))}
@@ -277,7 +295,7 @@ export default function ProductFilters({
                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
               />
             </svg>
-            Price
+            {t.price}
           </span>
           <ChevronIcon open={openSections.price} />
         </button>
@@ -295,7 +313,7 @@ export default function ProductFilters({
                   className="w-4 h-4 rounded border-rose-300 text-rose-500 focus:ring-rose-300 focus:ring-offset-0 cursor-pointer"
                 />
                 <span className="text-sm text-gray-600 group-hover:text-rose-600 transition-colors">
-                  {range.label}
+                  {t.priceRanges[range.labelKey]}
                 </span>
               </label>
             ))}
@@ -317,7 +335,7 @@ export default function ProductFilters({
             >
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            Rating
+            {t.rating}
           </span>
           <ChevronIcon open={openSections.rating} />
         </button>
@@ -338,7 +356,7 @@ export default function ProductFilters({
                     <StarIcon key={i} filled={i < r} />
                   ))}
                 </span>
-                <span className="text-xs">&amp; up</span>
+                <span className="text-xs">{t.andUp}</span>
               </button>
             ))}
           </div>
@@ -368,7 +386,7 @@ export default function ProductFilters({
               d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
             />
           </svg>
-          Filters
+          {t.filters}
           {activeFilterCount > 0 && (
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-bold">
               {activeFilterCount}
@@ -379,11 +397,11 @@ export default function ProductFilters({
         <div className="flex items-center gap-3 ml-auto">
           <p className="text-sm text-gray-400 hidden sm:block">
             <span className="font-semibold text-gray-600">{resultCount}</span>{" "}
-            product{resultCount !== 1 && "s"}
+            {productLabel}
           </p>
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-400 font-medium hidden sm:inline">
-              Sort by
+              {t.sortBy}
             </span>
             <select
               value={sortBy}
@@ -392,7 +410,7 @@ export default function ProductFilters({
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
-                  {opt.label}
+                  {t.sortOptions[opt.labelKey]}
                 </option>
               ))}
             </select>
@@ -404,7 +422,7 @@ export default function ProductFilters({
       {activeFilterCount > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <span className="text-xs font-medium text-gray-400">
-            Active filters:
+            {t.activeFilters}
           </span>
           {selectedAgeGroups.map((ag) => (
             <button
@@ -412,7 +430,7 @@ export default function ProductFilters({
               onClick={() => toggleArrayFilter(ag, setSelectedAgeGroups)}
               className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-medium border border-rose-200 hover:bg-rose-100 transition-colors"
             >
-              {ageGroups.find((a) => a.value === ag)?.label}
+              {getAgeGroupLabel(ag)}
               <svg
                 className="w-3 h-3"
                 fill="none"
@@ -430,7 +448,7 @@ export default function ProductFilters({
               onClick={() => toggleArrayFilter(cat, setSelectedCategories)}
               className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-medium border border-rose-200 hover:bg-rose-100 transition-colors"
             >
-              {cat}
+              {getCategoryLabel(cat)}
               <svg
                 className="w-3 h-3"
                 fill="none"
@@ -448,7 +466,7 @@ export default function ProductFilters({
               onClick={() => togglePriceRange(idx)}
               className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-medium border border-rose-200 hover:bg-rose-100 transition-colors"
             >
-              {priceRanges[idx].label}
+              {getPriceRangeLabel(idx)}
               <svg
                 className="w-3 h-3"
                 fill="none"
@@ -465,7 +483,7 @@ export default function ProductFilters({
               onClick={() => setMinRating(0)}
               className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-medium border border-rose-200 hover:bg-rose-100 transition-colors"
             >
-              {minRating}+ Stars
+                {minRating}+ {t.stars}
               <svg
                 className="w-3 h-3"
                 fill="none"
@@ -481,7 +499,7 @@ export default function ProductFilters({
             onClick={clearAllFilters}
             className="text-xs text-rose-500 font-semibold hover:text-rose-700 underline underline-offset-2 transition-colors ml-1"
           >
-            Clear all
+            {t.clearAll}
           </button>
         </div>
       )}
@@ -491,13 +509,13 @@ export default function ProductFilters({
         <aside className="hidden lg:block w-64 shrink-0 h-screen sticky top-0">
           <div className="sticky top-22 max-h-[calc(100vh-6rem)] overflow-y-auto bg-white/70 backdrop-blur-md rounded-2xl border border-rose-100/60 shadow-sm p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-gray-800">Filters</h2>
+              <h2 className="text-base font-bold text-gray-800">{t.filters}</h2>
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearAllFilters}
                   className="text-xs text-rose-500 font-medium hover:text-rose-700 transition-colors"
                 >
-                  Clear all
+                  {t.clearAll}
                 </button>
               )}
             </div>
@@ -520,7 +538,7 @@ export default function ProductFilters({
           {/* Panel */}
           <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl overflow-y-auto">
             <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-5 py-4 border-b border-rose-100">
-              <h2 className="text-base font-bold text-gray-800">Filters</h2>
+              <h2 className="text-base font-bold text-gray-800">{t.filters}</h2>
               <button
                 onClick={() => setSidebarOpen(false)}
                 className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-gray-500 hover:text-rose-600 hover:bg-rose-100 transition-colors"
@@ -542,13 +560,13 @@ export default function ProductFilters({
                 onClick={clearAllFilters}
                 className="flex-1 py-2.5 rounded-full border border-rose-200 text-rose-600 text-sm font-medium hover:bg-rose-50 transition-colors"
               >
-                Clear all
+                {t.clearAll}
               </button>
               <button
                 onClick={() => setSidebarOpen(false)}
                 className="flex-1 py-2.5 rounded-full bg-rose-500 text-white text-sm font-medium hover:bg-rose-600 transition-colors"
               >
-                Show {resultCount} results
+                {t.show} {resultCount} {t.results}
               </button>
             </div>
           </div>

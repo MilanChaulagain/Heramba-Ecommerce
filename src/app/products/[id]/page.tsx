@@ -6,6 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { addToCart } from "@/lib/cartStorage";
 import { isInWishlist, onWishlistUpdate, toggleWishlist } from "@/lib/wishlistStorage";
 import { productService, type Product } from "@/services/productService";
+import ProductReviews from "@/components/products/ProductReviews";
+import ProductQuestions from "@/components/products/ProductQuestions";
 
 type MediaItem = {
   type: "image" | "video";
@@ -464,6 +466,8 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </section>
+      <ProductReviews />
+      <ProductQuestions />
     </main>
   );
 }

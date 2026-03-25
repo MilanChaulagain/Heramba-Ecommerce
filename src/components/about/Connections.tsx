@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useT } from "@/hooks/useT";
 
 export default function Connections() {
+  const t = useT("aboutPage");
+
   return (
     <div className="relative overflow-hidden text-center h-full flex flex-col justify-center">
       
@@ -10,13 +15,11 @@ export default function Connections() {
 
       <div className="relative">
         <h2 className="text-2xl md:text-4xl font-bold text-rose-600">
-          Connect with Us
+          {t.connectionsTitle}
         </h2>
 
         <p className="mt-4 text-gray-600 text-base md:text-lg leading-relaxed">
-          Follow us on social media and join our community of loving parents. 
-          Share your stories, ask questions, and stay updated on the latest 
-          news and promotions.
+          {t.connectionsDescription}
         </p>
 
         {/* Social Buttons */}
