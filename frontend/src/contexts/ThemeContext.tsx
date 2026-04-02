@@ -35,7 +35,7 @@ function applyTheme(theme: ThemePreference) {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<ThemePreference>("system");
+  const [theme, setThemeState] = useState<ThemePreference>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       setThemeState(stored);
       applyTheme(stored);
     } else {
-      applyTheme("system");
+      applyTheme("light");
     }
 
     setMounted(true);

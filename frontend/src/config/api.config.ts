@@ -14,7 +14,7 @@
 // Read from environment variables or use defaults
 export const API_CONFIG = {
   // Set to true for MOCK API, false for REAL API
-  USE_MOCK_API: process.env.NEXT_PUBLIC_USE_MOCK_API === 'false' ? false : true,
+  USE_MOCK_API: process.env.NEXT_PUBLIC_USE_MOCK_API === 'true' ? false : true,
   
   // Real API base URL (used when USE_MOCK_API is false)
   API_BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
